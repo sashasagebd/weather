@@ -50,26 +50,27 @@ function processWeather(response){
     const daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     for(const { datetime, temp, conditions, windspeed } of daysObj.days) {
-        const dayList = document.createElement('ul');
+        const dayList = document.createElement('div');
         display.appendChild(dayList);
+        dayList.classList.add('day');
 
         const date = new Date(datetime);
         const dayOfTheWeek = date.getDay();
 
-        const dateItem = document.createElement('li');
-        dateItem.textContent = `Date: ${daysOfTheWeek[dayOfTheWeek]}`;
+        const dateItem = document.createElement('h1');
+        dateItem.textContent = daysOfTheWeek[dayOfTheWeek];
         dayList.appendChild(dateItem);
 
-        const tempItem = document.createElement('li');
-        tempItem.textContent = `Temp: ${temp}`;
+        const tempItem = document.createElement('p');
+        tempItem.textContent = `${temp} Fahrenheit`;
         dayList.appendChild(tempItem);
 
-        const conditionItem = document.createElement('li');
-        conditionItem.textContent = `Condition: ${conditions}`;
+        const conditionItem = document.createElement('p');
+        conditionItem.textContent = conditions;
         dayList.appendChild(conditionItem);
 
-        const windItem = document.createElement('li');
-        windItem.textContent = `Wind Speed: ${windspeed}`;
+        const windItem = document.createElement('p');
+        windItem.textContent = `Wind Speed: ${windspeed} mph`;
         dayList.appendChild(windItem);
 
         getIcon(conditions, dayList);

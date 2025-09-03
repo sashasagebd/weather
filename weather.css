@@ -3,6 +3,21 @@ img {
     height: 50px;
 }
 
-.display {
-    display:block
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(118, 170, 172, 0.5); /* Set the background color to be transparent */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Adjust the alpha value here for the box shadow transparency */
+    margin-top: 105px;
+}
+
+.day {
+    margin: 40px;
+    padding: 20px;
+    background-color: rgba(19, 159, 184, 0.75);
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
