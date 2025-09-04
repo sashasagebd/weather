@@ -37,13 +37,26 @@ function processWeather(response){
 
     console.log(currObj);
 
-    const currentList = document.createElement('ul');
+    const currentList = document.createElement('div');
+    currentList.classList.add('day');
+
     display.appendChild(currentList);
-    for(const key in currObj) {
-        const newItem = document.createElement('li');
-        newItem.textContent = `${key}: ${currObj[key]}`;
-        currentList.appendChild(newItem);
-    }
+
+    const currHeader = document.createElement('h1');
+    const currDateItem = document.createElement('p');
+    const currConditionsItem = document.createElement('p');
+    const currWindItem = document.createElement('p');
+
+    currHeader.textContent = "Right Now";
+    currDateItem.textContent = `${currObj.currentTemp} Fahrenheit`;
+    currConditionsItem.textContent = currObj.currentConditions;
+    currWindItem.textContent = `Wind Speed: ${currObj.currentWind}`
+
+    currentList.appendChild(currHeader);
+    currentList.appendChild(currDateItem);
+    currentList.appendChild(currConditionsItem);
+    currentList.appendChild(currWindItem);
+    getIcon(currObj.currentConditions, currentList);
 
     const daysObj = {};
     daysObj.days = response.days;
@@ -54,11 +67,12 @@ function processWeather(response){
         display.appendChild(dayList);
         dayList.classList.add('day');
 
-        const date = new Date(datetime);
-        const dayOfTheWeek = date.getDay();
+        const [year, month, day] = datetime.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
+        const weekday = date.toLocaleDateString(undefined, { weekday: "long" });
 
         const dateItem = document.createElement('h1');
-        dateItem.textContent = daysOfTheWeek[dayOfTheWeek];
+        dateItem.textContent = weekday;
         dayList.appendChild(dateItem);
 
         const tempItem = document.createElement('p');
