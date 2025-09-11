@@ -2,6 +2,8 @@ const fromCity = document.getElementById("location");
 const form = document.querySelector("form");
 
 const display = document.getElementById("display");
+let currObj = {};
+let daysObj = {};
 
 form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -20,7 +22,6 @@ function getWeather(city) {
             return response.json();
         })
         .then(function(response) {
-            console.log(response);
             processWeather(response)
         })
         .catch(function(err) {
@@ -29,13 +30,15 @@ function getWeather(city) {
 }
 
 function processWeather(response){
-    const currObj = {};
+    console.log(response);
 
-    currObj.currentTemp = response.currentConditions.temp;
-    currObj.currentConditions = response.currentConditions.conditions;
-    currObj.currentWind = response.currentConditions.windspeed;
+    const now = new Date();
+    const currentHour = now.getHours();
 
-    console.log(currObj);
+    currObj.currentTemp = response.days[0].hours[currentHour].temp;
+    currObj.currentConditions = response.days[0].hours[currentHour].conditions;
+    currObj.currentWind = response.days[0].hours[currentHour].windspeed;
+
 
     const currentList = document.createElement('div');
     currentList.classList.add('day');
@@ -58,11 +61,10 @@ function processWeather(response){
     currentList.appendChild(currWindItem);
     getIcon(currObj.currentConditions, currentList);
 
-    const daysObj = {};
     daysObj.days = response.days;
     const daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-    for(const { datetime, temp, conditions, windspeed } of daysObj.days) {
+    for(const { datetime, tempmax, tempmin, conditions, windspeed, hours} of daysObj.days) {
         const dayList = document.createElement('div');
         display.appendChild(dayList);
         dayList.classList.add('day');
@@ -75,22 +77,65 @@ function processWeather(response){
         dateItem.textContent = weekday;
         dayList.appendChild(dateItem);
 
-        const tempItem = document.createElement('p');
-        tempItem.textContent = `${temp} Fahrenheit`;
-        dayList.appendChild(tempItem);
+        const tempMaxItem = document.createElement('p');
+        tempMaxItem.textContent = `High: ${tempmax} Fahrenheit`;
+        dayList.appendChild(tempMaxItem);
+
+        const tempMinItem = document.createElement('p');
+        tempMinItem.textContent = `Low: ${tempmin} Fahrenheit`;
+        dayList.appendChild(tempMinItem);
 
         const conditionItem = document.createElement('p');
         conditionItem.textContent = conditions;
         dayList.appendChild(conditionItem);
 
-        const windItem = document.createElement('p');
-        windItem.textContent = `Wind Speed: ${windspeed} mph`;
-        dayList.appendChild(windItem);
-
         getIcon(conditions, dayList);
+
+        const expandButton = document.createElement('button');
+        expandButton.classList.add('hour-button');
+        expandButton.textContent = "Expand";
+        dayList.appendChild(expandButton);
+
+        expandButton.addEventListener("click", () => {
+                for(let i = 0; i < 24; i++) {
+                    const hourItem = document.createElement('p');
+                    hourItem.classList.add('hour-item');
+                    if(i === 0) {
+                        hourItem.textContent = `12 AM: ${hours[i].temp} F`;
+                    }
+                    else if(i < 12) {
+                        hourItem.textContent = `${i} AM: ${hours[i].temp} F`;
+                    }
+                    else {
+                        hourItem.textContent = `${i - 12} PM: ${hours[i].temp} F`;
+                    }
+                    dayList.appendChild(hourItem);
+                }
+                const collapseButton = document.createElement('button');
+                collapseButton.classList.add('hour-button');
+                collapseButton.textContent = "Collapse"
+        
+                dayList.removeChild(expandButton);
+                dayList.appendChild(collapseButton);
+
+                collapseButton.addEventListener("click", () => {
+                    const hourItems = dayList.querySelectorAll('.hour-item');
+                    hourItems.forEach(item => item.remove());
+                    dayList.removeChild(collapseButton);
+                    dayList.appendChild(expandButton);
+                })
+        })
+        
+
+
+
+        /*const windItem = document.createElement('p');
+        windItem.textContent = `Wind Speed: ${windspeed} mph`;
+        dayList.appendChild(windItem);*/
+
+        
     }
 
-    console.log(daysObj.days[0]);
 }
 
 function getIcon(conditions, list) {
